@@ -1,26 +1,18 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import '../styles/index.css'
+import { ThemeProvider } from "@material-tailwind/react"
+import { BrowserRouter } from "react-router-dom"
 
-// Importas ambas páginas
-import AuthPage from '../features/auth/pages/AuthPage.jsx'
-import RegisterPage from '../features/auth/pages/RegisterPage.jsx'
+import '../styles/index.css'
+import { AuthPage } from '../features/auth/pages/AuthPage.jsx'
+import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        {/* Ruta para el Login */}
-        <Route path="/login" element={<AuthPage />} />
-
-        {/* Ruta para el Registro */}
-        <Route path="/register" element={<RegisterPage />} />
-
-        {/* Redirección automática al login si entran a la raíz o ruta inexistente */}
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 )
