@@ -1,5 +1,25 @@
+import { useState } from "react";
+import { useUserActions } from "../hooks/useUserActions.js";
+import { showSuccess, showError } from "../../../shared/utils/toast.js";
+
 export const UserModal = ({ isOpen, onClose, user }) => {
+    const { handleToggleStatus } = useUserActions();
+    const [isUpdating, setIsUpdating] = useState(false);
+
     if (!isOpen || !user) return null;
+
+    const onToggleStatusModal = async () => {
+        setIsUpdating(true);
+        try {
+            await handleToggleStatus(user._id || user.id);
+            showSuccess(`Estado del usuario actualizado`);
+            onClose();
+        } catch (error) {
+            showError("Error al actualizar estado");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4">
@@ -23,8 +43,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                         <div>
                             <h3 className="text-xl font-bold text-gray-900">{user.name}</h3>
                             <p className="text-gray-500">{user.email}</p>
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${user.role === 'Moderador' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
-                                }`}>
+                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${user.role === 'Moderador' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
                                 {user.role}
                             </span>
                         </div>
@@ -45,9 +64,13 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                         <button onClick={onClose} className="px-6 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition">
                             Cerrar
                         </button>
-                        <button className={`px-6 py-2.5 rounded-xl font-bold text-white transition shadow-lg ${user.status === 'Activo' ? 'bg-red-500 hover:bg-red-600 shadow-red-100' : 'bg-green-500 hover:bg-green-600 shadow-green-100'
-                            }`}>
-                            {user.status === 'Activo' ? 'Desactivar Cuenta' : 'Activar Cuenta'}
+                        <button
+                            disabled={isUpdating}
+                            onClick={onToggleStatusModal}
+                            className={`px-6 py-2.5 rounded-xl font-bold text-white transition shadow-lg disabled:opacity-50 ${user.status === 'Activo' ? 'bg-red-500 hover:bg-red-600 shadow-red-100' : 'bg-green-500 hover:bg-green-600 shadow-green-100'
+                                }`}
+                        >
+                            {isUpdating ? "Cargando..." : user.status === 'Activo' ? 'Desactivar Cuenta' : 'Activar Cuenta'}
                         </button>
                     </div>
                 </div>

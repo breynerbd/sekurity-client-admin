@@ -1,55 +1,35 @@
-import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import { Navbar } from "./Navbar.jsx";
 import { Sidebar } from "./Sidebar.jsx";
 
-// Importación de Features
-import { Comments } from "../../../features/comments/components/Comments";
-import { Reports } from "../../../features/reports/components/Reports";
-import { Users } from "../../../features/users/components/Users";
-import { Zones } from "../../../features/zones/components/Zones";
-import { Ratings } from "../../../features/ratings/components/Ratings";
-
 export const DashboardContainer = () => {
-    const [activeTab, setActiveTab] = useState("dashboard");
-
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
             <Navbar />
 
             <div className="flex flex-1 overflow-hidden">
-                {/* El Sidebar controla el estado activeTab */}
-                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                {/* Enrutado: El Sidebar ya no necesita setActiveTab, 
+            ahora usará <NavLink> de react-router-dom */}
+                <Sidebar />
 
-                <main className="flex-1 p-8 overflow-y-auto">
+                <main className="flex-1 p-8 overflow-y-auto bg-[#F8FAFC]">
                     <div className="max-w-[1400px] mx-auto">
-                        {/* Contenedor principal:
-                            Mantiene el estilo de bordes redondeados y sombra 
-                            visto en todas las capturas (cap admin1 a cap admin5)
-                        */}
-                        <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-10">
 
-                            {/* 1. Vista de Dashboard */}
-                            {activeTab === "dashboard" && (
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-                                    <p className="text-sm text-gray-500">Resumen general del sistema de seguridad</p>
-                                </div>
-                            )}
+                        {/* Contenedor principal con el estilo de Sekurity */}
+                        <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-10 min-h-full">
 
-                            {/* 2. Vista de Reportes (Basado en cap admin1) */}
-                            {activeTab === "reports" && <Reports reports={[]} />}
+                            {/* HEADER DINÁMICO (Opcional) */}
+                            <div className="mb-10">
+                                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+                                    Panel de Control Sekurity
+                                </h2>
+                                <div className="h-1 w-12 bg-blue-600 mt-2 rounded-full"></div>
+                            </div>
 
-                            {/* 3. Vista de Comentarios (Basado en cap admin2) */}
-                            {activeTab === "comments" && <Comments comments={[]} />}
-
-                            {/* 4. Vista de Usuarios (Basado en cap admin3) */}
-                            {activeTab === "users" && <Users users={[]} />}
-
-                            {/* 5. Vista de Zonas (Basado en cap admin4) */}
-                            {activeTab === "zones" && <Zones zones={[]} />}
-
-                            {/* 6. Vista de Calificaciones (Basado en cap admin5) */}
-                            {activeTab === "ratings" && <Ratings ratings={[]} />}
+                            {/* Aquí es donde react-router-dom inyectará Users, Reports, etc. */}
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <Outlet />
+                            </div>
 
                         </div>
                     </div>

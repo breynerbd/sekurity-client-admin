@@ -1,34 +1,73 @@
-import imgLogo from "../../../assets/img/sekurity_logo.png"
+import imgLogo from "../../../assets/img/sekurity_logo.png";
 
 export const Navbar = () => {
     return (
-        <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-            <div className="w-full px-4 h-16 flex items-center justify-between">
+        <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-[60] border-b border-gray-100 shadow-sm">
+            <div className="w-full mx-auto px-6 h-20 flex items-center justify-between">
 
-                <div className="flex items-center gap-3">
-                    <img
-                        src={imgLogo}
-                        alt="Sekurity Logo"
-                        className="h-10 w-auto"
-                    />
+                {/* SECCIÓN IZQUIERDA: Logo + Branding */}
+                <div className="flex items-center gap-4 group cursor-pointer">
+                    <div className="bg-blue-50/50 p-2 rounded-xl border border-blue-100/50 transition-transform group-hover:scale-105 shadow-sm">
+                        <img
+                            src={imgLogo}
+                            alt="Sekurity Logo"
+                            className="h-10 w-auto object-contain"
+                        />
+                    </div>
 
-                    <div className="flex flex-col leading-tight">
-                        <span className="font-bold text-gray-900 text-base tracking-tight">
-                            Sekurity
-                        </span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            Admin Panel
+                    <div className="flex flex-col">
+                        <h1 className="font-black text-gray-900 text-xl tracking-tighter leading-none">
+                            SEKURITY
+                        </h1>
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] mt-1">
+                            Security Management
                         </span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="text-right hidden md:block">
-                        <p className="text-xs font-bold text-gray-800">Admin User</p>
-                        <p className="text-[10px] text-gray-400">admin@sekurity.com</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-blue-50 border-2 border-white shadow-sm flex items-center justify-center text-blue-600 font-bold text-xs">
-                        AU
+                {/* SECCIÓN DERECHA: Notificaciones + Perfil */}
+                <div className="flex items-center gap-4 md:gap-6">
+
+                    {/* Botón de Notificaciones (Estilo Kafetery) */}
+                    <button className="relative group p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 border border-transparent hover:border-blue-100">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.8}
+                            stroke="currentColor"
+                            className="w-6 h-6 group-hover:rotate-12 transition-transform"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                        </svg>
+
+                        {/* Indicador de notificación */}
+                        <span className="absolute top-2 right-2 flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600 border-2 border-white"></span>
+                        </span>
+                    </button>
+
+                    {/* Divisor vertical */}
+                    <div className="h-8 w-[1px] bg-gray-100"></div>
+
+                    {/* Perfil de Usuario */}
+                    <div className="flex items-center gap-3">
+                        <div className="text-right hidden sm:block">
+                            <p className="text-xs font-black text-gray-900">Admin User</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Super Administrator</p>
+                        </div>
+
+                        <div className="relative group cursor-pointer">
+                            {/* Avatar con gradiente estilo Sekurity (Azules) */}
+                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-700 p-[2px] shadow-md transition-transform group-hover:rotate-3">
+                                <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center text-blue-700 font-black text-lg">
+                                    AU
+                                </div>
+                            </div>
+                            {/* Punto de estado online */}
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+                        </div>
                     </div>
                 </div>
             </div>
