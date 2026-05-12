@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from "@material-tailwind/react"
 import { BrowserRouter } from "react-router-dom"
+import "leaflet/dist/leaflet.css";
 
 import '../styles/index.css'
 import { AuthPage } from '../features/auth/pages/AuthPage.jsx'

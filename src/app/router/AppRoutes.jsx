@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import { AuthPage } from "../../features/auth/pages/AuthPage.jsx";
 import { DashboardPage } from "../layout/DashboardPage.jsx";
 
+// Importación de la nueva vista principal
+import { HomeDashboard } from "../../shared/components/layout/HomeDashboard.jsx";
+
 // Importaciones de Features (Sekurity)
 import { Comments } from "../../features/comments/components/Comments.jsx";
 import { Ratings } from "../../features/ratings/components/Ratings.jsx";
@@ -9,7 +12,7 @@ import { Reports } from "../../features/reports/components/Reports.jsx";
 import { Users } from "../../features/users/components/Users.jsx";
 import { Zones } from "../../features/zones/components/Zones.jsx";
 
-// Asumiendo que sigues la estructura de modales/formularios para creación
+// Modales/Formularios
 import { UserModal } from "../../features/users/components/UserModal.jsx";
 import { ZoneModal } from "../../features/zones/components/ZoneModal.jsx";
 import { ReportModal } from "../../features/reports/components/ReportModal.jsx";
@@ -22,6 +25,10 @@ export const AppRoutes = () => {
 
             {/* Dashboard y Rutas Protegidas */}
             <Route path="/dashboard/*" element={<DashboardPage />}>
+
+                {/* --- ESTA ES LA RUTA QUE AGREGASTE --- */}
+                {/* 'index' le dice a React: "Si la ruta es exactamente /dashboard, muestra esto" */}
+                <Route index element={<HomeDashboard />} />
 
                 {/* Users */}
                 <Route path="users" element={<Users />} />

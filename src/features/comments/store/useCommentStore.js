@@ -1,17 +1,15 @@
 import { create } from "zustand";
 import { axiosAdmin } from "../../../shared/api/api.js";
 
-export const useCommentStore = create((set, get) => ({
+export const useCommentStore = create((set) => ({
     comments: [],
     loading: false,
     error: null,
 
-    // Obtener todos los comentarios
     getComments: async () => {
         try {
             set({ loading: true, error: null });
             const response = await axiosAdmin.get("/comments");
-            // Adaptamos según la estructura de tu respuesta de API
             set({
                 comments: response.data.data || response.data,
                 loading: false,
@@ -24,22 +22,19 @@ export const useCommentStore = create((set, get) => ({
         }
     },
 
-    // Eliminar un comentario (Siguiendo tu patrón de delete)
     deleteComment: async (id) => {
         try {
-            set({ loading: true, error: null });
+            // No ponemos loading: true aquí para que la lista no parpadee al eliminar
             await axiosAdmin.delete(`/comments/${id}`);
 
-            // Filtramos el comentario eliminado del estado local
             set((state) => ({
                 comments: state.comments.filter((c) => (c._id || c.id) !== id),
-                loading: false,
             }));
+            return true;
         } catch (error) {
-            set({
-                error: error.response?.data?.message || "Error al eliminar el comentario",
-                loading: false,
-            });
+            const msg = error.response?.data?.message || "Error al eliminar el comentario";
+            set({ error: msg });
+            throw new Error(msg);
         }
     },
 }));

@@ -52,3 +52,25 @@
   filter: blur(1.5px);
   z-index: 1;
 }
+
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+  background-color: #f8fafc !important;
+}
+
+.leaflet-tile-container {
+  will-change: transform;
+}
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.leaflet-fade-anim .leaflet-tile,
+.leaflet-zoom-anim .leaflet-tile {
+  transition: opacity 0.2s linear;
+}

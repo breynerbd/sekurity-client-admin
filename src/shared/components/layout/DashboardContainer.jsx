@@ -7,26 +7,24 @@ export const DashboardContainer = () => {
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
             <Navbar />
 
-            <div className="flex flex-1 overflow-hidden">
-                {/* Enrutado: El Sidebar ya no necesita setActiveTab, 
-            ahora usará <NavLink> de react-router-dom */}
+            <div className="flex flex-1 overflow-hidden relative">
                 <Sidebar />
 
-                <main className="flex-1 p-8 overflow-y-auto bg-[#F8FAFC]">
+                {/* 
+                   CAMBIOS RESPONSIVOS: 
+                   - p-4 en móvil, p-8 en escritorio.
+                   - pb-28 en móvil para dejar espacio al Tab Bar inferior.
+                */}
+                <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-[#F8FAFC] pb-28 lg:pb-8">
                     <div className="max-w-[1400px] mx-auto">
 
-                        {/* Contenedor principal con el estilo de Sekurity */}
-                        <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-10 min-h-full">
+                        {/* 
+                           Contenedor con bordes redondeados adaptados:
+                           - rounded-2xl en móvil, rounded-[32px] en escritorio.
+                           - p-5 en móvil, p-10 en escritorio.
+                        */}
+                        <div className="bg-white rounded-2xl lg:rounded-[32px] border border-gray-100 shadow-sm p-5 lg:p-10 min-h-full">
 
-                            {/* HEADER DINÁMICO (Opcional) */}
-                            <div className="mb-10">
-                                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-                                    Panel de Control Sekurity
-                                </h2>
-                                <div className="h-1 w-12 bg-blue-600 mt-2 rounded-full"></div>
-                            </div>
-
-                            {/* Aquí es donde react-router-dom inyectará Users, Reports, etc. */}
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <Outlet />
                             </div>
