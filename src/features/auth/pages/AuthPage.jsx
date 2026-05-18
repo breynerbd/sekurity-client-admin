@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../components/LoginForm.jsx";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm.jsx";
+import { useAuthStore } from "../store/authStore.js";
 import imgLogo from "../../../assets/img/sekurity_logo.png";
 
 export const AuthPage = () => {
     const [isForgot, setIsForgot] = useState(false);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-4 font-sans">
