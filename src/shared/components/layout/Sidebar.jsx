@@ -15,7 +15,7 @@ export const Sidebar = () => {
     return (
         <>
             {/* --- SIDEBAR ESCRITORIO (Recupera su tamaño normal) --- */}
-            <aside className="hidden lg:flex w-72 bg-white min-h-[calc(100vh-5rem)] p-6 border-r border-gray-100 flex-col sticky top-20">
+            <aside className="hidden lg:flex w-72 bg-white min-h-[calc(100vh-5rem)] p-6 border-r border-gray-100 flex-col fixed top-20 left=0 overflow-y-auto">
                 <nav>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-4">
                         Menú de Gestión

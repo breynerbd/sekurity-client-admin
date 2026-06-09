@@ -88,7 +88,7 @@ export const Zones = () => {
                             className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group overflow-hidden"
                         >
                             {/* MAPA PREVIEW */}
-                            <div className="h-40 bg-gray-100 relative overflow-hidden">
+                            <div className="h-45 bg-gray-100 relative overflow-hidden">
                                 <MiniMap
                                     lat={zone.latitude || zone.lat}
                                     lng={zone.longitude || zone.lng}

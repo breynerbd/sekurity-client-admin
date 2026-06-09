@@ -15,7 +15,7 @@ export const DashboardContainer = () => {
                    - p-4 en móvil, p-8 en escritorio.
                    - pb-28 en móvil para dejar espacio al Tab Bar inferior.
                 */}
-                <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-[#F8FAFC] pb-28 lg:pb-8">
+                <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-[#F8FAFC] pb-28 lg:ml-72">
                     <div className="max-w-[1400px] mx-auto">
 
                         {/* 

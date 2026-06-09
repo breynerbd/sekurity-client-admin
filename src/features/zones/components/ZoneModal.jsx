@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, Circle } from "react-leaflet";
 import { useZoneActions } from "../hooks/useZoneActions.js";
 import { showError, showSuccess } from "../../../shared/utils/toast.js";
 import L from "leaflet";
 
-// Fix para iconos de Leaflet (evita que desaparezcan en producción)
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 let DefaultIcon = L.icon({
@@ -15,7 +14,6 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Captura el clic del usuario en el mapa
 function MapEvents({ setPosition }) {
     useMapEvents({
         click(e) {
@@ -34,17 +32,15 @@ export const ZoneModal = ({ isOpen, onClose }) => {
     const [position, setPosition] = useState(null);
     const [formData, setFormData] = useState({ name: "", description: "" });
 
-    // REFERENCIA PARA EL MAPA (Soluciona el problema de renderizado en modales)
     const mapRef = useRef(null);
 
-    // Efecto para recalcular el tamaño del mapa cuando el modal se abre
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => {
                 if (mapRef.current) {
                     mapRef.current.invalidateSize();
                 }
-            }, 250); // Delay necesario para esperar la animación del modal
+            }, 250);
         }
     }, [isOpen]);
 
@@ -60,7 +56,6 @@ export const ZoneModal = ({ isOpen, onClose }) => {
             await addZone({
                 name: formData.name,
                 description: formData.description,
-                // CAMBIA lat/lng por los nombres exactos de tu modelo de Sequelize:
                 latitude: position.lat,
                 longitude: position.lng
             });
@@ -80,27 +75,40 @@ export const ZoneModal = ({ isOpen, onClose }) => {
         <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex justify-center items-end sm:items-center z-[100] p-0 sm:p-4">
             <div className="bg-white rounded-t-[32px] sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto flex flex-col md:flex-row animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
 
-                {/* LADO IZQUIERDO: MAPA INTERACTIVO (Mantiene tu implementación) */}
                 <div className="w-full md:w-1/2 h-[300px] md:h-auto min-h-[300px] bg-slate-100 relative">
-                    <div className="absolute top-4 left-4 z-[1000] bg-white/90 px-3 py-1.5 rounded-full shadow-md border border-blue-100">
+                    <div className="absolute top-4 left-13 z-[1000] bg-white/90 px-3 py-1.5 rounded-full shadow-md border border-blue-100">
                         <p className="text-[9px] font-black uppercase text-blue-600 tracking-wider flex items-center gap-1">
                             {position ? "📍 Ubicación fijada" : "🖱️ Toca el mapa"}
                         </p>
                     </div>
 
                     <MapContainer
-                        center={[13.6893, -89.1872]}
+                        center={[14.62540, -90.53586]}
                         zoom={13}
                         className="h-full w-full"
                         ref={mapRef}
                     >
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <TileLayer
+                            url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                        />
+
                         <MapEvents setPosition={setPosition} />
                         {position && <Marker position={[position.lat, position.lng]} />}
+                        {position && (
+                            <Circle
+                                center={[position.lat, position.lng]}
+                                radius={200}
+                                pathOptions={{
+                                    color: "#3b82f6",
+                                    fillColor: "#3b82f6",
+                                    fillOpacity: 0.2,
+                                    weight: 2,
+                                }}
+                            />
+                        )}
                     </MapContainer>
                 </div>
 
-                {/* LADO DERECHO: FORMULARIO */}
                 <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-6 md:p-8 space-y-6">
                     <div className="flex justify-between items-center">
                         <h2 className="text-xl md:text-2xl font-bold text-gray-800">Nueva Zona</h2>
@@ -138,7 +146,6 @@ export const ZoneModal = ({ isOpen, onClose }) => {
                             />
                         </div>
 
-                        {/* COORDENADAS ADAPTABLES */}
                         <div className="flex gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
                             <div className="flex-1 text-center">
                                 <span className="text-[8px] font-bold text-blue-400 uppercase block">Latitud</span>
