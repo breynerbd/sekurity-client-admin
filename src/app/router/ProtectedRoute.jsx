@@ -5,8 +5,10 @@ export const ProtectedRoute = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const user = useAuthStore((state) => state.user);
 
-    // Verificamos si está autenticado y si es ADMIN (según tu lógica de store)
-    if (!isAuthenticated || user?.role !== "ADMIN") {
+    // ✅ CORRECCIÓN: Permitimos el acceso tanto si es "ADMIN" como si es "MASTER_ADMIN"
+    const hasAccess = user?.role === "ADMIN" || user?.role === "MASTER_ADMIN";
+
+    if (!isAuthenticated || !hasAccess) {
         return <Navigate to="/" replace />;
     }
 

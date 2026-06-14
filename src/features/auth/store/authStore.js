@@ -20,9 +20,11 @@ export const useAuthStore = create(
             checkAuth: () => {
                 const token = get().token;
                 const role = get().user?.role;
-                const isAdmin = role === "ADMIN";
+                
+                // ✅ PERMITIR ACCESO A ADMIN Y MASTER_ADMIN
+                const hasAccess = role === "ADMIN" || role === "MASTER_ADMIN";
 
-                if (token && !isAdmin) {
+                if (token && !hasAccess) {
                     set({
                         user: null,
                         token: null,
@@ -52,12 +54,14 @@ export const useAuthStore = create(
 
                 const decoded = jwtDecode(token);
 
-                console.log(decoded);
+                console.log("Token decodificado:", decoded);
 
-                const role =
-                    decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                // ✅ Mapeamos el nuevo claim corto "role" que configuramos en .NET.
+                // Como fallback temporal, dejamos el claim largo por si usas otros servicios antiguos.
+                const role = decoded.role || decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-                if (role !== "ADMIN") {
+                // ✅ Validamos que pertenezca a cualquiera de los dos roles administrativos permitidos
+                if (role !== "ADMIN" && role !== "MASTER_ADMIN") {
                     const message = "No autorizado para acceder al panel de administración";
                     set({
                         user: null,
@@ -74,7 +78,8 @@ export const useAuthStore = create(
 
                 set({
                     user: {
-                        role
+                        role,
+                        username: decoded.username || decoded.unique_name
                     },
                     token,
                     refreshToken: data.refreshToken,

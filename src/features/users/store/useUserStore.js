@@ -11,14 +11,29 @@ export const useUserStore = create((set, get) => ({
         try {
             set({ loading: true, error: null });
             const response = await axiosAdmin.get("/users");
+            
+            // 🔍 Analizamos inteligentemente la estructura que manda tu backend
+            let cleanUsersList = [];
+
+            if (response && response.data) {
+                if (Array.isArray(response.data)) {
+                    cleanUsersList = response.data;
+                } else if (response.data.data && Array.isArray(response.data.data)) {
+                    cleanUsersList = response.data.data;
+                } else if (response.data.users && Array.isArray(response.data.users)) {
+                    cleanUsersList = response.data.users; // ✅ Por si tu backend de Node usa la propiedad "users"
+                }
+            }
+
             set({
-                users: response.data.data || response.data,
+                users: cleanUsersList,
                 loading: false,
             });
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error al obtener los usuarios",
                 loading: false,
+                users: [] // Fallback seguro para evitar que .filter() rompa el componente visual
             });
         }
     },
