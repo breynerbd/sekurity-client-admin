@@ -42,8 +42,7 @@ export const useUserStore = create((set, get) => ({
     toggleUserStatus: async (id) => {
         try {
             set({ loading: true, error: null });
-            // Asumimos que tienes un endpoint tipo PATCH o PUT para esto
-            const response = await axiosAdmin.patch(`/users/toggle-status/${id}`);
+            const response = await axiosAdmin.patch(`/users/${id}/deactivate`);   // ← corregido
 
             // Actualizamos el estado localmente
             set((state) => ({
