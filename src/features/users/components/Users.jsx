@@ -3,11 +3,9 @@ import { UserModal } from "./UserModal.jsx";
 import { useUserStore } from "../store/useUserStore.js";
 import { showError, showSuccess } from "../../../shared/utils/toast.js";
 import { showConfirmToast } from "../../auth/components/ConfirmModal";
-import { useUserActions } from "../hooks/useUserActions.js";
 
 export const Users = () => {
-    const { users = [], loading, error, getUsers } = useUserStore();
-    const { handleToggleStatus } = useUserActions();
+    const { users = [], loading, error, getUsers, toggleUserStatus } = useUserStore();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -22,8 +20,8 @@ export const Users = () => {
     }, [error]);
 
     const stats = useMemo(() => [
-        { label: "Activos", count: users.filter(u => u.status === 'Activo').length, icon: "👥", color: "text-green-600", bg: "bg-green-50" },
-        { label: "Inactivos", count: users.filter(u => u.status !== 'Activo').length, icon: "👤", color: "text-gray-400", bg: "bg-gray-100" },
+        { label: "Activos", count: users.filter(u => u.isActive === true).length, icon: "👥", color: "text-green-600", bg: "bg-green-50" },
+        { label: "Inactivos", count: users.filter(u => u.isActive === false).length, icon: "👤", color: "text-gray-400", bg: "bg-gray-100" },
         { label: "Moderadores", count: users.filter(u => u.role === 'Moderador').length, icon: "🛡️", color: "text-blue-600", bg: "bg-blue-50" },
     ], [users]);
 
@@ -34,15 +32,17 @@ export const Users = () => {
 
     const onToggleStatus = (e, user) => {
         e.stopPropagation();
-        const action = user.status === 'Activo' ? 'desactivar' : 'activar';
+        const currentlyActive = user.isActive === true;
+        const targetActionLabel = currentlyActive ? 'desactivar' : 'activar';
 
         showConfirmToast({
-            title: `¿${action.charAt(0).toUpperCase() + action.slice(1)} usuario?`,
-            message: `¿Estás seguro de que deseas ${action} a ${user.name}?`,
+            title: `¿${targetActionLabel} usuario?`,
+            message: `¿Estás seguro de que deseas ${targetActionLabel} a ${user.name}?`,
             onConfirm: async () => {
                 try {
-                    await handleToggleStatus(user._id || user.id);
-                    showSuccess(`Usuario ${action === 'activar' ? 'activado' : 'desactivado'} correctamente`);
+                    const userId = user._id || user.id;
+                    await toggleUserStatus(userId, currentlyActive);
+                    showSuccess(`Usuario ${currentlyActive ? 'desactivado' : 'activado'} correctamente`);
                 } catch (err) {
                     showError("No se pudo cambiar el estado");
                 }
@@ -58,7 +58,6 @@ export const Users = () => {
     return (
         <div className="w-full max-w-7xl mx-auto animate-fade-in p-4 md:p-8">
 
-            {/* HEADER ALINEADO A LA IZQUIERDA (Estilo Sekurity) */}
             <div className="mb-8">
                 <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
                     Control de Usuarios
@@ -69,7 +68,6 @@ export const Users = () => {
                 </p>
             </div>
 
-            {/* STATS CARDS - Adaptables */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 {stats.map((stat, i) => (
                     <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
@@ -84,7 +82,6 @@ export const Users = () => {
                 ))}
             </div>
 
-            {/* BARRA DE BÚSQUEDA */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 mb-8">
                 <div className="relative flex-1">
                     <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
@@ -102,10 +99,8 @@ export const Users = () => {
                 </div>
             </div>
 
-            {/* CONTENEDOR DE RESULTADOS */}
             <div className="bg-white md:bg-transparent rounded-2xl overflow-hidden">
-
-                {/* VISTA DE ESCRITORIO: TABLA (Oculta en móviles) */}
+                {/* TABLA ESCRITORIO */}
                 <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -149,17 +144,17 @@ export const Users = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-2 w-fit ${user.status === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'Activo' ? 'bg-green-600' : 'bg-gray-400'}`}></span>
-                                            {user.status}
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-2 w-fit ${user.isActive === true ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${user.isActive === true ? 'bg-green-600' : 'bg-gray-400'}`}></span>
+                                            {user.isActive === true ? 'Activo' : 'Inactivo'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={(e) => onToggleStatus(e, user)}
-                                            className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase border transition-all ${user.status === 'Activo' ? 'border-gray-200 text-gray-400 hover:text-red-600' : 'border-green-200 text-green-600'}`}
+                                            className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase border transition-all ${user.isActive === true ? 'border-gray-200 text-gray-400 hover:text-red-600' : 'border-green-200 text-green-600'}`}
                                         >
-                                            {user.status === 'Activo' ? 'Desactivar' : 'Activar'}
+                                            {user.isActive === true ? 'Desactivar' : 'Activar'}
                                         </button>
                                     </td>
                                 </tr>
@@ -168,7 +163,7 @@ export const Users = () => {
                     </table>
                 </div>
 
-                {/* VISTA MÓVIL: CARDS (Visible solo en móviles) */}
+                {/* VISTA MÓVIL: CARDS */}
                 <div className="md:hidden space-y-4">
                     {!loading && filteredUsers.map((user) => (
                         <div
@@ -202,9 +197,9 @@ export const Users = () => {
                                 </div>
                                 <button
                                     onClick={(e) => onToggleStatus(e, user)}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${user.status === 'Activo' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${user.isActive === true ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}
                                 >
-                                    {user.status === 'Activo' ? 'Desactivar' : 'Activar'}
+                                    {user.isActive === true ? 'Desactivar' : 'Activar'}
                                 </button>
                             </div>
                         </div>

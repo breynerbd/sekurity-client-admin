@@ -6,49 +6,43 @@ export const useUserStore = create((set, get) => ({
     loading: false,
     error: null,
 
-    // Obtener todos los usuarios
     getUsers: async () => {
         try {
             set({ loading: true, error: null });
             const response = await axiosAdmin.get("/users");
-            
-            // 🔍 Analizamos inteligentemente la estructura que manda tu backend
-            let cleanUsersList = [];
 
+            let cleanUsersList = [];
             if (response && response.data) {
                 if (Array.isArray(response.data)) {
                     cleanUsersList = response.data;
                 } else if (response.data.data && Array.isArray(response.data.data)) {
                     cleanUsersList = response.data.data;
                 } else if (response.data.users && Array.isArray(response.data.users)) {
-                    cleanUsersList = response.data.users; // ✅ Por si tu backend de Node usa la propiedad "users"
+                    cleanUsersList = response.data.users;
                 }
             }
 
-            set({
-                users: cleanUsersList,
-                loading: false,
-            });
+            set({ users: cleanUsersList, loading: false });
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error al obtener los usuarios",
                 loading: false,
-                users: [] // Fallback seguro para evitar que .filter() rompa el componente visual
+                users: []
             });
         }
     },
 
-    // Alternar estado (Activar/Desactivar)
-    toggleUserStatus: async (id) => {
+    toggleUserStatus: async (id, currentStatus) => {
         try {
             set({ loading: true, error: null });
-            const response = await axiosAdmin.patch(`/users/${id}/deactivate`);   // ← corregido
 
-            // Actualizamos el estado localmente
+            const endpoint = currentStatus ? `/users/${id}/deactivate` : `/users/${id}/activate`;
+            const response = await axiosAdmin.patch(endpoint);
+
             set((state) => ({
                 users: state.users.map((u) =>
                     (u._id || u.id) === id
-                        ? { ...u, status: u.status === 'Activo' ? 'Inactivo' : 'Activo' }
+                        ? { ...u, isActive: !currentStatus }
                         : u
                 ),
                 loading: false,
