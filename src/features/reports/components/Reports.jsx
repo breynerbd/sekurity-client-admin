@@ -41,10 +41,16 @@ export const Reports = () => {
         });
     };
 
-    const filteredReports = reports.filter(r =>
-        r.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.user?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filtro corregido para buscar por nombre de usuario si viene como objeto ✅
+    const filteredReports = reports.filter(r => {
+        const titleMatch = r.title?.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        // Verifica si user es un objeto o un string antes de filtrar
+        const userName = typeof r.user === 'object' ? (r.user?.name || r.user?.username) : r.user;
+        const userMatch = userName?.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        return titleMatch || userMatch;
+    });
 
     return (
         <div className="w-full max-w-7xl mx-auto animate-fade-in p-4 md:p-6 lg:p-8">
@@ -129,10 +135,15 @@ export const Reports = () => {
 
                                     <div className="flex flex-wrap items-center gap-y-2 gap-x-4 pt-4 border-t border-gray-50 mt-auto">
                                         <div className="flex items-center text-xs text-gray-400 font-medium">
-                                            <span className="mr-1.5">👤</span> {report.user || "Anónimo"}
+                                            <span className="mr-1.5">👤</span> 
+                                            {/* Corregido para manejar strings u objetos de usuario ✅ */}
+                                            {typeof report.user === 'object' 
+                                                ? (report.user?.name || report.user?.username || "Anónimo") 
+                                                : (report.user || "Anónimo")
+                                            }
                                         </div>
                                         <div className="flex items-center text-xs text-gray-400 font-medium">
-                                            <span className="mr-1.5">📅</span> {new Date(report.date).toLocaleDateString()}
+                                            <span className="mr-1.5">📅</span> {report.date ? new Date(report.date).toLocaleDateString() : 'Sin fecha'}
                                         </div>
                                         <div className={`ml-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold ${report.status === 'Resuelto' ? 'bg-green-100 text-green-700' :
                                                 report.status === 'En Progreso' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'
