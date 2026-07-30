@@ -6,7 +6,7 @@ import { useAuthStore } from '../../features/auth/store/authStore.js';
 // Instancia Auth (.NET)
 const axiosAuth = axios.create({
     baseURL: import.meta.env.VITE_AUTH_URL || "http://localhost:5070/api/v1/auth",
-    timeout: 8000,
+    timeout: 45000,
     headers: {
         "Content-Type": "application/json",
     }
@@ -15,7 +15,7 @@ const axiosAuth = axios.create({
 // Instancia Admin (Node.js - Sekurity)
 const axiosAdmin = axios.create({
     baseURL: import.meta.env.VITE_ADMIN_URL || "http://localhost:3005/sekurity/v1",
-    timeout: 8000,
+    timeout: 45000,
     headers: {
         "Content-Type": "application/json",
     },
@@ -24,7 +24,7 @@ const axiosAdmin = axios.create({
 // Instancia User (Node.js - Sekurity)
 const axiosUser = axios.create({
     baseURL: import.meta.env.VITE_USER_URL || "http://localhost:3006/sekurity/v1",
-    timeout: 8000,
+    timeout: 45000,
     headers: {
         "Content-Type": "application/json",
     },
