@@ -10,6 +10,7 @@ export const useCommentStore = create((set) => ({
         try {
             set({ loading: true, error: null });
             const response = await axiosAdmin.get("/comments");
+            console.log("Datos crudos de comentarios:", response.data);
             set({
                 comments: response.data.data || response.data,
                 loading: false,
