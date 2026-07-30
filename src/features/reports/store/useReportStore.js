@@ -6,12 +6,10 @@ export const useReportStore = create((set, get) => ({
     loading: false,
     error: null,
 
-    // Obtener todos los reportes
     getReports: async () => {
         try {
             set({ loading: true, error: null });
             const response = await axiosAdmin.get("/reports");
-            // Adaptamos según tu estructura (data.data o data)
             set({
                 reports: response.data.data || response.data,
                 loading: false,
@@ -24,7 +22,6 @@ export const useReportStore = create((set, get) => ({
         }
     },
 
-    // Eliminar un reporte
     deleteReport: async (id) => {
         try {
             set({ loading: true, error: null });
@@ -39,15 +36,18 @@ export const useReportStore = create((set, get) => ({
                 error: error.response?.data?.message || "Error al eliminar el reporte",
                 loading: false,
             });
-            throw error; // Re-lanzamos para manejarlo en el componente
+            throw error;
         }
     },
 
-    // Actualizar estado o prioridad de un reporte
     updateReport: async (id, updateData) => {
         try {
             set({ loading: true, error: null });
-            const response = await axiosAdmin.put(`/reports/${id}`, updateData);
+            const payload = {
+                status: updateData.status,
+                newStatus: updateData.status
+            };
+            const response = await axiosAdmin.patch(`/reports/${id}/status`, payload);
 
             set((state) => ({
                 reports: state.reports.map((r) =>

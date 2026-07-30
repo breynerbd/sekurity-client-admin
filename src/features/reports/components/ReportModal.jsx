@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import { useReportStore } from "../store/useReportStore.js";
 import { showSuccess, showError } from "../../../shared/utils/toast.js";
+import { MiniMap } from "../../zones/components/MiniMap.jsx";
 
 export const ReportModal = ({ isOpen, onClose, report }) => {
     const { updateReport } = useReportStore();
-    const [status, setStatus] = useState("Pendiente");
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // Sincronizar el estado local cuando cambia el reporte seleccionado
+    const [status, setStatus] = useState("ACTIVE");
     useEffect(() => {
-        if (report) setStatus(report.status || "Pendiente");
+        if (report) setStatus(report.status || "ACTIVE");
     }, [report]);
 
     if (!isOpen || !report) return null;
 
-    // Extraer limpiamente el nombre visible del usuario (sea objeto o string) ✅
     const getUserName = () => {
         if (!report.user) return "Anónimo";
         if (typeof report.user === "object") {
@@ -26,7 +25,6 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
     const userName = getUserName();
     const initialLetter = userName.charAt(0).toUpperCase();
 
-    // Función de actualización integrada para resolver el handleSave alternativo ✅
     const handleSave = async () => {
         setIsUpdating(true);
         try {
@@ -45,7 +43,6 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
         <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-md flex justify-center items-end sm:items-center z-[999] px-0 sm:px-4">
             <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
 
-                {/* HEADER */}
                 <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
                     <h2 className="text-xl font-bold text-gray-800">Detalles del Incidente</h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors">
@@ -55,7 +52,6 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
                     </button>
                 </div>
 
-                {/* CONTENT - SCROLLABLE */}
                 <div className="p-6 space-y-6 overflow-y-auto">
                     <section>
                         <label className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-2">Asunto</label>
@@ -64,16 +60,32 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
 
                     <section className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                         <label className="text-[10px] font-bold uppercase text-gray-400 tracking-widest block mb-2">Descripción detallada</label>
-                        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{report.description}</p>
+                        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap break-all">{report.description}</p>
+                    </section>
+
+                    <section>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-[10px] font-bold uppercase text-gray-400 tracking-widest block">Ubicación del Incidente</label>
+                            <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">Interactiva</span>
+                        </div>
+                        <div className="w-full h-48 rounded-2xl overflow-hidden border border-gray-100 relative shadow-sm [&_.leaflet-container]:w-full [&_.leaflet-container]:h-full">
+                            <MiniMap
+                                lat={report.zone?.latitude || report.latitude}
+                                lng={report.zone?.longitude || report.longitude}
+                                interactive={true}
+                                zoomControl={true}
+                                dragging={true}
+                                scrollWheelZoom={true}
+                            />
+                        </div>
                     </section>
 
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className="text-[10px] font-bold uppercase text-gray-400 mb-2 block">Prioridad</label>
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${report.priority === 'Alta' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
-                                }`}>
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${report.priority === 'Alta' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                                 <span className={`w-2 h-2 rounded-full mr-2 ${report.priority === 'Alta' ? 'bg-red-500' : 'bg-green-500'}`}></span>
-                                {report.priority}
+                                {report.priority || report.severity_level}
                             </span>
                         </div>
                         <div>
@@ -90,18 +102,22 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
                     <section className="pt-4 border-t border-gray-100">
                         <label className="text-xs font-bold text-gray-800 mb-3 block">Estado de Resolución</label>
                         <div className="grid grid-cols-1 gap-2">
-                            {['Pendiente', 'En Progreso', 'Resuelto'].map((opt) => (
+                            {[
+                                { label: 'Activo', value: 'ACTIVE' },
+                                { label: 'En Progreso', value: 'IN_PROGRESS' },
+                                { label: 'Resuelto', value: 'RESOLVED' }
+                            ].map((opt) => (
                                 <button
-                                    key={opt}
+                                    key={opt.value}
                                     type="button"
-                                    onClick={() => setStatus(opt)}
-                                    className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all ${status === opt
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200'
+                                    onClick={() => setStatus(opt.value)}
+                                    className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all ${status === opt.value
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200'
                                         }`}
                                 >
-                                    <span className="text-sm font-bold">{opt}</span>
-                                    {status === opt && (
+                                    <span className="text-sm font-bold">{opt.label}</span>
+                                    {status === opt.value && (
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
@@ -112,7 +128,6 @@ export const ReportModal = ({ isOpen, onClose, report }) => {
                     </section>
                 </div>
 
-                {/* ACTIONS */}
                 <div className="p-6 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
                     <button
                         type="button"
