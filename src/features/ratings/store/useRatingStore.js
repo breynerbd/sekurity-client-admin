@@ -26,9 +26,15 @@ export const useRatingStore = create((set, get) => ({
         const { ratings } = get();
         if (ratings.length === 0) return { avg: 0, total: 0, best: "N/A" };
 
-        const totalVotes = ratings.reduce((acc, curr) => acc + curr.totalRatings, 0);
-        const avgGlobal = (ratings.reduce((acc, curr) => acc + curr.average, 0) / ratings.length).toFixed(1);
-        const bestReport = [...ratings].sort((a, b) => b.average - a.average)[0]?.title;
+        const totalVotes = ratings.reduce((acc, curr) => acc + Number(curr.totalRatings || 0), 0);
+
+        const validAverages = ratings.map(r => Number(r.average)).filter(avg => !isNaN(avg));
+        const avgGlobal = validAverages.length > 0
+            ? (validAverages.reduce((acc, curr) => acc + curr, 0) / validAverages.length).toFixed(1)
+            : "0.0";
+
+        const bestItem = [...ratings].sort((a, b) => Number(b.average || 0) - Number(a.average || 0))[0];
+        const bestReport = bestItem?.report?.title || bestItem?.title || "N/A";
 
         return { avg: avgGlobal, total: totalVotes, best: bestReport };
     }
